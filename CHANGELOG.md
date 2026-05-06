@@ -45,4 +45,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 **Release Date:** 2026-05-06  
 **Repository:** [github.com/nokia/nsp-playbooks-for-Ansible](https://github.com/nokia/nsp-playbooks-for-Ansible)
 
-[0.1.0]: https://github.com/nokia/nsp-playbooks-for-Ansible/releases/tag/v0.1.0
+[0.1.0]: https://github.com/nokia/nsp-playbooks-for-Ansible/releases/tag/0.1.0
