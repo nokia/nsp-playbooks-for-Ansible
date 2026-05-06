@@ -55,6 +55,7 @@ nav:
   - User Guide: guides/user-guide.md
   - Developer Guide: guides/developer-guide.md
   - Community Guide: guides/community-guide.md
+  - Git workflow: guides/git-workflow.md
 - Examples: examples.md
 - Support: support.md
 - Reference:

@@ -9,5 +9,5 @@ tests/inventory.yml
 .DS_Store
 site/
 
-# Cursor IDE rules (local only, do not push)
+# Local editor metadata (not part of the collection)
 .cursor/
