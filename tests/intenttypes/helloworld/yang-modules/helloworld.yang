@@ -1,0 +1,16 @@
+module helloworld {
+  namespace "urn:nokia.com:nsp:yang:im:helloworld";
+  prefix "helloworld";
+
+  organization "NSP DevOps";
+  contact "";
+  description "";
+
+  revision "2026-02-18" {
+    description
+      "Initial revision.";
+  }
+
+  container helloworld {
+  }
+}

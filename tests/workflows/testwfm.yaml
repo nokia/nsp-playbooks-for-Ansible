@@ -1,0 +1,25 @@
+---
+version: '2.0'
+
+helloworld:
+  description: Simple test workflow for CI/CD
+  type: direct
+  
+  tags:
+    - test
+    - ci-cd
+
+  input:
+    - host: 127.0.0.1
+    - seconds: 1
+  
+  output:
+    result: <% task("pingtask").result %>
+  
+  tasks:
+    pingtask:
+      action: nsp.ping
+      input:
+        host: <% $.host %>
+        duration: <% $.seconds %>
+...

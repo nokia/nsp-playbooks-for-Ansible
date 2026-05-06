@@ -1,0 +1,52 @@
+---
+- name: Upload/Download text and binary files using NSP file-service-app
+  hosts: nsp
+  gather_facts: no
+
+  tasks:
+    - name: create test file
+      delegate_to: localhost
+      copy:
+        content: "Test file created by Ansible at {{ lookup('pipe', 'date') }}\n"
+        dest: /tmp/test_upload_A.txt
+
+    - name: create 2nd file
+      delegate_to: localhost
+      copy:
+        content: "2nd Test file created by Ansible at {{ lookup('pipe', 'date') }}\n"
+        dest: /tmp/test_upload_B.txt
+
+    - name: create zip file
+      delegate_to: localhost
+      archive:
+        path:
+          - /tmp/test_upload_A.txt
+          - /tmp/test_upload_B.txt
+        dest: /tmp/test_archive.zip
+        format: zip        
+
+    - name: upload file
+      nokia.nsp.upload:
+        local_path:
+          - /tmp/test_upload_A.txt
+          - /tmp/test_upload_B.txt
+          - /tmp/test_archive.zip
+        remote_path: /nokia
+
+    - name: get files
+      nokia.nsp.rest:
+        method: GET
+        path: /nsp-file-service-app/rest/api/v1/directory?dirName=/nokia
+      register: response
+
+    - name: list files
+      debug:
+        var: response.json.data | map(attribute='fileName') | list
+
+    - name: download file
+      nokia.nsp.download:
+        remote_path:
+          - /nokia/test_upload_A.txt
+          - /nokia/test_upload_B.txt
+          - /nokia/test_archive.zip
+        local_path: /tmp/download/

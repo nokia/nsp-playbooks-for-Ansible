@@ -1,0 +1,40 @@
+{
+  "supports-network-state-suspend": true,
+  "geo-location": {
+    "has-geo-location": false,
+    "layer": "device"
+  },
+  "composite": false,
+  "supports-asynchronous-operations": false,
+  "live-state-retrieval": true,
+  "support-nested-type-in-es": false,
+  "author": "NSP DevOps",
+  "target-component": [
+    {
+      "i18n-text": "Circuit Id",
+      "name": "circuitId",
+      "is-device-name": false,
+      "value-type": "STRING",
+      "order": 1
+    }
+  ],
+  "supports-health": "never",
+  "mapping-engine": "js-scripted-graal",
+  "label": [
+    "ApprovedMisalignments",
+    "GraalJS"
+  ],
+  "priority": 50,
+  "version": "1",
+  "targetted-device": [
+    {
+      "function": "getTargettedDevices",
+      "index": 0
+    }
+  ],
+  "return-config-as-json": true,
+  "build": "-",
+  "lifecycle-state": "released",
+  "notify-intent-instance-events": false,
+  "intent-type": "iplink"
+}

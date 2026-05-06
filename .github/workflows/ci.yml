@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate:
+    name: Validate Collection
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Validate syntax and code quality
+        run: make validate lint
+
+  build:
+    name: Build Collection
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Build collection
+        run: make build
+
+      - name: Extract collection metadata
+        id: meta
+        run: |
+          sudo apt-get update && sudo apt-get install -y yq || pip install yq
+          FILENAME="$(yq -r '. | "\(.namespace)-\(.name)-\(.version).tar.gz"' galaxy.yml)"
+          
+          if [ ! -f "$FILENAME" ]; then
+            echo "Collection artifact $FILENAME not found" >&2
+            exit 1
+          fi
+          
+          echo "FILENAME=$FILENAME" >> "$GITHUB_ENV"
+          echo "Artifact: $FILENAME"
+
+      - name: Upload collection artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nsp-ansible-collection
+          path: ${{ env.FILENAME }}

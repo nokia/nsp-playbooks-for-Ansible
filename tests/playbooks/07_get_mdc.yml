@@ -1,0 +1,20 @@
+---
+# srosv6 hosts delegate_to the same nsp25_11 (httpapi). Ansible multiplexes them onto one
+# persistent control socket (~/.ansible/pc/...); parallel forks can race there ("connection refused"
+# before HTTP). Retries alone are not enough in practice; throttle: 1 serializes this task reliably.
+- name: Upload/Download text and binary files using NSP file-service-app
+  hosts: srosv6
+  gather_facts: no
+
+  tasks:
+    - name: get system config
+      throttle: 1
+      ansible.netcommon.restconf_get:
+        path: "/restconf/data/network-device-mgr:network-devices/network-device={{ neid }}/root/nokia-conf:/configure/system?depth=1"
+      delegate_to: nsp25_11
+      register: inventory_result
+
+    - name: output result
+      debug:
+        var: inventory_result
+...

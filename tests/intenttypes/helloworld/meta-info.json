@@ -1,0 +1,35 @@
+{
+  "supports-network-state-suspend": false,
+  "geo-location": {
+    "has-geo-location": false,
+    "layer": "device"
+  },
+  "composite": false,
+  "supports-asynchronous-operations": false,
+  "live-state-retrieval": true,
+  "support-nested-type-in-es": false,
+  "author": "NSP DevOps",
+  "target-component": [
+    {
+      "i18n-text": "Target Device",
+      "function-name": "suggestTargetDevices",
+      "pattern-error-message": "",
+      "name": "neId",
+      "is-device-name": false,
+      "value-type": "STRING",
+      "order": 1
+    }
+  ],
+  "supports-health": "never",
+  "mapping-engine": "js-scripted-graal",
+  "label": [
+    "NSP DevOps using vsCode"
+  ],
+  "priority": 50,
+  "version": "1",
+  "return-config-as-json": true,
+  "build": "-",
+  "lifecycle-state": "released",
+  "notify-intent-instance-events": false,
+  "intent-type": "helloworld"
+}

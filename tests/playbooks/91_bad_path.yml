@@ -1,0 +1,30 @@
+---
+- name: Error handling, Bad path
+  hosts: nsp
+  gather_facts: no
+
+  tasks:
+    - name: Execute RPC with error handling
+      block:
+
+        - name: Retrieve equipment data
+          ansible.netcommon.restconf_get:
+            path: "/restconf/data/nsp-equipment:network/network-elements?fields=ne-id;ne-name;ip-address&include-meta=false"
+          register: result
+
+        - name: Process result
+          debug:
+            var: result
+
+      rescue:
+        - name: Handle RPC error
+          debug:
+            msg: "{{ ansible_failed_result.msg }}"
+
+        - name: Log error for analysis
+          copy:
+            content: |
+              HTTP Error: {{ ansible_failed_result.code }}
+              Error Time: {{ now(utc=True).isoformat() }}
+              Error Body: {{ ansible_failed_result.msg }}
+            dest: /tmp/nsp_error.log

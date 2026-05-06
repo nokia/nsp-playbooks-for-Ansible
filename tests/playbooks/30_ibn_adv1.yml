@@ -1,0 +1,65 @@
+---
+# Upload intent-type helloworld, add intents via raw RESTCONF/action, then delete intent-type.
+# Uses fixture at tests/intenttypes/helloworld. Ibn module uses operation-based API (same as playbook 31);
+# intent add/audit/sync/delete are done with raw RESTCONF and action for reference.
+- name: NSP intent manager lifecycle operations using helloworld intent-type
+  hosts: nsp
+  gather_facts: false
+
+  vars:
+    intent_type_path: "{{ playbook_dir }}/../intenttypes/helloworld"
+    target: 1034::cafe:4
+
+  tasks:
+    - name: Upload intent-type
+      nokia.nsp.ibn:
+        operation: upload_intent_type
+        path: "{{ intent_type_path }}"
+      register: upload_result
+
+    - name: Add intent via RESTCONF (POST)
+      nokia.nsp.rest:
+        path: "/restconf/data/ibn:ibn"
+        method: POST
+        body:
+          "ibn:intent":
+            target: "{{ target }}"
+            intent-type: "{{ upload_result.intent_type }}"
+            intent-type-version: "{{ upload_result.version | int }}"
+            "ibn:intent-specific-data":
+              "helloworld:helloworld": {}
+            required-network-state: active
+        headers:
+          Content-Type: "application/yang-data+json"
+
+    - name: Audit intent (check configuration)
+      nokia.nsp.action:
+        path: "ibn:ibn/intent={{ target | urlencode }},{{ upload_result.intent_type | urlencode }}"
+        operation: audit
+      register: audit_result
+
+    - name: Show audit result
+      debug:
+        var: audit_result
+
+    - name: Synchronize intent (push configuration to network)
+      nokia.nsp.action:
+        path: "ibn:ibn/intent={{ target | urlencode }},{{ upload_result.intent_type | urlencode }}"
+        operation: synchronize
+
+    - name: Remove intent via RESTCONF (DELETE)
+      nokia.nsp.rest:
+        path: "/restconf/data/ibn:ibn/intent={{ target | urlencode }},{{ upload_result.intent_type | urlencode }}"
+        method: DELETE
+
+    - name: Delete intent-type
+      nokia.nsp.ibn:
+        operation: delete_intent_type
+        intent_type: "{{ upload_result.intent_type }}"
+        version: "{{ upload_result.version }}"
+        force: true
+      register: delete_result
+
+    - name: Show delete result
+      debug:
+        msg: "{{ delete_result.msg }} (changed: {{ delete_result.changed }})"

@@ -1,0 +1,27 @@
+{
+    "type": "object",
+    "properties": [
+        {
+            "name": "host",
+            "title": "HOST",
+            "description": "Enter the target to ping",
+            "columnSpan": 4,
+            "newRow": true,
+            "readOnly": false,
+            "required": false,
+            "type": "string",
+            "default": "localhost"
+        },
+        {
+            "name": "seconds",
+            "title": "SECONDS",
+            "description": "description for seconds",
+            "columnSpan": 4,
+            "newRow": true,
+            "readOnly": false,
+            "required": false,
+            "type": "number",
+            "default": 1
+        }
+    ]
+}

@@ -1,0 +1,54 @@
+# Ansible Module: {{ namespace }}
+
+**{{ short_description }}**
+
+{% if notes -%}
+!!! note "Notes"
+{% for note in notes %}
+{{ (note | ansible) | indent(4, first=true) }}
+{% endfor %}
+{% endif -%}
+
+{% if description_items -%}
+## Synopsis
+
+{% for item in description_items -%}
+* {{ item | ansible }}
+{% endfor %}
+{% endif -%}
+
+{% if options -%}
+## Parameters
+
+| Parameter | Type | Comments |
+| --- | --- | --- |
+{% for opt_name, opt_data in options.items() %}{% set _anchor = "param-" ~ opt_name.replace('_', '-') %}| {{ opt_name }} {{ '{#' ~ _anchor ~ '}' }} | {{ opt_data.type or 'any' }} | {{ opt_data.comments | replace('\n', '<br/>') }} |
+{% endfor %}
+{% endif -%}
+
+{% if examples -%}
+## Examples
+
+```yaml
+{{ examples }}
+```
+{% endif -%}
+
+{% if return_entries -%}
+## Return Values
+
+| Parameter | Type | Comments |
+| --- | --- | --- |
+{% for e in return_entries %}| {{ e.key }} {{ '{#return-' ~ e.key.replace('_', '-') ~ '}' }} | {{ e.type }} | {{ e.comments | replace('\n', '<br/>') }} |
+{% endfor %}
+{% elif return_values -%}
+## Return Values
+
+```yaml
+{{ return_values }}
+```
+{% endif -%}
+
+{% if version_added -%}
+*New in version {{ version_added }}*
+{% endif %}

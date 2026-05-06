@@ -1,0 +1,65 @@
+---
+- name: List and download CAM bundles
+  hosts: nsp
+  gather_facts: no
+
+  vars:
+    max_size: 1000000
+
+  tasks:
+    - name: Get installed CAM bundles
+      nokia.nsp.rest:
+        method: GET
+        path: /cam/rest/api/v2/artifactBundle/
+      register: bundles
+
+    - name: List installed CAM bundles
+      debug:
+        var: bundles.json.bundles.response.data | map(attribute='name') | list
+      when: 
+        - bundles.json is defined
+        - bundles.json is mapping
+
+    - name: Get uploaded CAM bundles
+      nokia.nsp.rest:
+        method: GET
+        path: /nsp-file-service-app/rest/api/v1/directory?dirName=/nokia/nsp/cam/artifacts/bundle
+      register: response
+
+    - name: Filter CAM bundles by size
+      set_fact:
+        small_files: >-
+          {{
+            (response.json.data | default([]))
+            | selectattr('size', 'lt', max_size)
+            | map(attribute='fileName')
+            | list
+          }}
+        large_files: >-
+          {{
+            (response.json.data | default([]))
+            | selectattr('size', 'ge', max_size)
+            | map(attribute='fileName')
+            | list
+          }}
+
+    - name: Display large files being skipped
+      debug:
+        msg: "{{ large_files }}"
+      when: large_files | length > 0
+
+    - name: Download CAM bundles to /tmp
+      nokia.nsp.download:
+        remote_path: "{{ small_files }}"
+        local_path: /tmp
+      register: result
+      when: small_files | length > 0
+
+    - name: Display results
+      debug:
+        var: result
+      when: small_files | length > 0
+
+    - name: Display summary
+      debug:
+        msg: "Downloaded {{ small_files | length }} files, skipped {{ large_files | length }} large files"

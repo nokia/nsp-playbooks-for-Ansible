@@ -1,0 +1,86 @@
+---
+- name: Read/Write device QoS configuration via NSP as proxy
+  hosts: srosv6
+  gather_facts: no
+
+  tasks:
+    - name: create config
+      throttle: 1
+      ansible.netcommon.restconf_config:
+        path: "/restconf/data/network-device-mgr:network-devices/network-device={{ neid }}/root/nokia-conf:/configure/qos/sap-ingress=gold"
+        method: put
+        content: |
+          {
+              "nokia-conf:sap-ingress": {
+                  "sap-ingress-policy-name": "gold",
+                  "policy-id": "145",
+                  "description": "gold policy",
+                  "queue": [
+                      {
+                          "queue-id": 2,
+                          "mbs": "auto",
+                          "rate": {
+                              "pir": "max",
+                              "cir": "100"
+                          }
+                      }
+                  ],
+                  "dot1p": [
+                      {
+                          "dot1p-value": 0,
+                          "fc": "be"
+                      }
+                  ],
+                  "fc": [
+                      {
+                          "fc-name": "be",
+                          "queue": 2
+                      }
+                  ]
+              }
+          }
+      delegate_to: nsp25_11
+
+    - name: get config using RESTCONF
+      throttle: 1
+      ansible.netcommon.restconf_get:
+        path: "/restconf/data/network-device-mgr:network-devices/network-device={{ neid }}/root/nokia-conf:/configure/qos/sap-ingress=gold"
+      delegate_to: nsp25_11
+      register: result_restconf
+
+    - name: output RESTCONF config
+      debug:
+        var: result_restconf
+
+    - name: get config using CLI
+      ansible.netcommon.cli_command:
+        command: "show qos sap-ingress"
+      register: result_cli
+
+    - name: output CLI config
+      debug:
+        var: result_cli.stdout_lines
+
+    - name: get config using NETCONF
+      vars:
+        ansible_connection: netconf     
+      ansible.netcommon.netconf_get:
+        filter: |
+          <configure xmlns="urn:nokia.com:sros:ns:yang:sr:conf">
+            <qos>
+              <sap-ingress>
+                <sap-ingress-policy-name>gold</sap-ingress-policy-name>
+              </sap-ingress>
+            </qos>
+          </configure>
+      register: result_netconf
+
+    - name: output NETCONF config
+      debug:
+        var: result_netconf.stdout_lines
+
+    - name: get config (verify delete)
+      throttle: 1
+      ansible.netcommon.restconf_get:
+        path: "/restconf/data/network-device-mgr:network-devices/network-device={{ neid }}/root/nokia-conf:/configure/qos/sap-ingress=gold"
+      delegate_to: nsp25_11

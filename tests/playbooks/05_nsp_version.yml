@@ -1,0 +1,28 @@
+---
+- name: NSP version
+  hosts: nsp
+  gather_facts: no
+
+  tasks:
+    - name: Validate minimum version requirement
+      nokia.nsp.version:
+        check: "25.4"
+      register: nsp_version
+
+    - name: Show compatibility
+      debug:
+        msg: "{{ nsp_version.release }} is compatible"
+
+    - name: Show version details
+      debug:
+        var: nsp_version
+
+    - name: Display pretty version 
+      debug:
+        msg: |
+          NSP Version Details:
+          Release: {{ nsp_version.release }}
+          Major: {{ nsp_version.major }}
+          Minor: {{ nsp_version.minor }}
+
+

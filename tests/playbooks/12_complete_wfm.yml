@@ -1,0 +1,83 @@
+---
+- name: Execute NSP WFM action
+  hosts: nsp
+  gather_facts: no
+
+  tasks:
+    - name: Create workflow
+      nokia.nsp.rest:
+        method: POST
+        path: /wfm/api/v1/workflow/definition?provider=&version=
+        body: |
+          ---
+          version: '2.0'
+
+          helloworld:
+            description: small test workflow
+            type: direct
+
+            tags:
+              - test
+
+            output:
+              result: <% task("pingtask").result %>
+              happy: friday
+              long: weekend
+
+            tasks:
+              pingtask:
+                action: nsp.ping
+                input:
+                  host: localhost
+                  duration: 1
+          ...
+      register: creation
+
+    - name: Get workflow info
+      set_fact:
+        workflow_id: "{{ creation.json.response.data[0].id }}"
+        workflow_name: "{{ creation.json.response.data[0].name }}"
+
+    - name: Publish workflow
+      nokia.nsp.rest:
+        method: PUT
+        path: /wfm/api/v1/workflow/{{ workflow_id }}/status
+        body:
+          status: PUBLISHED
+    
+    - name: Run workflow
+      nokia.nsp.rest:
+        method: POST
+        path:  /wfm/api/v1/execution/synchronous
+        dest: /tmp/result.txt
+        body:
+          params:
+            env: DefaultEnv
+          notifyKafka: true
+          input: {}
+          workflow_name: "{{ workflow_name }}"
+          workflow_id: "{{ workflow_id }}"
+      register: execution
+
+    - name: Get execution results
+      set_fact:
+        exec_state: "{{ execution.json.response.data[0].state }}"
+        exec_output: "{{ execution.json.response.data[0].output }}"
+        exec_info: "{{ execution.json.response.data[0].state_info }}"
+
+    - name: Show execution details, success
+      debug:
+        var: exec_output
+      when: exec_state == "SUCCESS"
+
+    - name: Show execution details, failed
+      debug:
+        msg: |
+          Execution failed
+          Error Details: {{ exec_info }}
+      when: exec_state == "ERROR"
+
+    - name: Delete workflow
+      nokia.nsp.rest:
+        method: DELETE
+        path: /wfm/api/v1/workflow/{{ workflow_id }}

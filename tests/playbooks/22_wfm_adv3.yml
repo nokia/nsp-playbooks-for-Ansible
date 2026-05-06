@@ -1,0 +1,39 @@
+---
+- name: Deploy single workflow from folder
+  hosts: nsp
+  gather_facts: no
+  
+  tasks:
+    - name: Deploy hello world workflow from folder
+      nokia.nsp.wfm:
+        upload: workflows/helloworld
+      register: deploy_result
+
+    - name: show result
+      debug:
+        var: deploy_result
+    
+    - name: Display workflow information
+      debug:
+        msg: |
+          Workflow deployed successfully:
+            - Name: {{ deploy_result.workflow_name }}
+            - ID: {{ deploy_result.workflow_id }}
+            - Status: {{ deploy_result.status }}
+
+    - name: Execute workflow
+      nokia.nsp.wfm:
+        execute: "{{ deploy_result.workflow_name }}"
+        input:
+          host: localhost
+          seconds: 5
+      register: exec_result
+
+    - name: Show execution result
+      debug:
+        var: exec_result
+
+    - name: Delete workflow
+      nokia.nsp.wfm:
+        delete: "{{ deploy_result.workflow_name }}"
+      register: delete_result

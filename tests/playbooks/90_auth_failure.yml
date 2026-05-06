@@ -1,0 +1,29 @@
+---
+- name: Error handling, Authentication
+  hosts: nsp
+  gather_facts: no
+
+  vars:
+    ne_jd: "1034::cafe:2"
+    intent_name: "fixeddemo"
+    ansible_password: "corrupt"
+
+  tasks:
+    - name: Execute RPC with error handling
+      block:
+        - name: Run nsp-inventory:find
+          nokia.nsp.rpc:
+            operation: nsp-inventory:find
+            input:
+              xpath-filter: "/nsp-equipment:network/network-element"
+              fields: "ne-id;ne-name"
+          register: result
+
+        - name: Process result
+          debug:
+            msg: "Found {{ result.output['nsp-inventory:output'].data | length }} devices"
+
+      rescue:
+        - name: Handle RPC error
+          debug:
+            msg: "{{ ansible_failed_result.msg }}"

@@ -1,0 +1,23 @@
+---
+- name: Query NSP network inventory using RESTCONF GET
+  hosts: nsp
+  gather_facts: no
+
+  tasks:
+    - name: Retrieve equipment data
+      ansible.netcommon.restconf_get:
+        path: "/restconf/data/nsp-equipment:network/network-element?fields=ne-id;ne-name;ip-address&include-meta=false"
+      register: inventory_result
+
+    - name: Parse results
+      debug:
+        msg: "{{ inventory_result }}"
+
+    - name: List devices
+      debug:
+        var: inventory_result.response['nsp-equipment:network-element']
+
+    - name: Display summary
+      debug:
+        msg: "Found {{ inventory_result.response['nsp-equipment:network-element'] | length }} devices"
+...

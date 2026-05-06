@@ -1,0 +1,31 @@
+all:
+  vars:
+    ansible_httpapi_use_proxy: false
+  children:
+    nsp:
+      vars:
+        ansible_connection: ansible.netcommon.httpapi
+        ansible_network_os: nokia.nsp.nsp
+        ansible_user: "admin"
+        ansible_password: "changeme"
+        ansible_httpapi_use_ssl: true
+        ansible_httpapi_validate_certs: false
+      hosts:
+        nsp_server:
+          ansible_host: 192.0.2.1
+    srosv6:
+      vars:
+        ansible_network_os: nokia.sros.md
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_user: admin
+        ansible_password: changeme
+      hosts:
+        router1:
+          neid: "1034::cafe:1"
+          ansible_host: 192.0.2.10
+        router2:
+          neid: "1034::cafe:2"
+          ansible_host: 192.0.2.11
+        router3:
+          neid: "1034::cafe:3"
+          ansible_host: 192.0.2.12

@@ -1,0 +1,14 @@
+dist/
+ansible-env/
+.ansible_collections/
+__pycache__/
+*.tar.gz
+tests/inventory.yml
+.vscode/
+*.log
+tests/reports/
+.DS_Store
+site/
+
+# Local editor metadata (not part of the collection)
+.cursor/

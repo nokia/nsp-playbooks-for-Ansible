@@ -1,0 +1,29 @@
+---
+- name: Execute NSP WFM action
+  hosts: nsp
+  gather_facts: no
+
+  tasks:
+    - name: Execute action via REST API
+      nokia.nsp.rest:
+        method: POST
+        path: /wfm/api/v1/action-execution
+        body:
+          name: nsp.ping
+          examples: Default
+          description: "Test ping action"
+          input:
+            host: localhost
+            duration: 1
+      register: execution
+
+    - name: Display execution result
+      debug:
+        var: execution.json
+
+    - name: Show execution details
+      debug:
+        msg: |
+          Status: {{ execution.status }}
+          Execution completed successfully
+          Response keys: {{ execution.json.keys() | list }}

@@ -1,0 +1,97 @@
+site_name: Nokia NSP Ansible Collection
+site_description: Ansible plugin and modules for Nokia NSP
+site_url: https://network.developer.nokia.com
+edit_uri: edit/main/docs/
+site_author: Sven Wisotzky
+repo_name: nokia/nsp-playbooks-for-Ansible
+repo_url: https://github.com/nokia/nsp-playbooks-for-Ansible
+copyright: Copyright &copy; 2026 Nokia
+theme:
+  name: material
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    toggle:
+      icon: material/toggle-switch-off-outline
+      name: Switch to dark mode
+  - media: '(prefers-color-scheme: dark)'
+    scheme: slate
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to light mode
+  logo: media/nsp.png
+  favicon: media/favicon.ico
+  include_search_page: false
+  search_index_only: true
+  language: en
+  features:
+  - navigation.instant
+  - navigation.tracking
+  - navigation.tabs
+  - navigation.top
+  - search.suggest
+  - search.highlight
+  - content.code.copy
+  - content.code.select
+  - navigation.sections
+  - content.code.annotate
+  - content.action.edit
+  - toc.follow
+  - content.tooltips
+  - content.footnote.tooltips
+  - navigation.indexes
+  font:
+    text: NokiaPureText
+    code: Fira Code
+nav:
+- Home: index.md
+- Getting Started:
+  - Installation: getting-started/installation.md
+  - Quick Start: getting-started/quick-start.md
+- Guides:
+  - Overview: guides/index.md
+  - Admin Guide: guides/admin-guide.md
+  - Security Guide: guides/security-guide.md
+  - User Guide: guides/user-guide.md
+  - Developer Guide: guides/developer-guide.md
+  - Community Guide: guides/community-guide.md
+  - Git workflow: guides/git-workflow.md
+- Examples: examples.md
+- Support: support.md
+- Reference:
+  - Overview: reference/index.md
+  - Modules:
+    - Action: reference/nokia.nsp.action.md
+    - Download: reference/nokia.nsp.download.md
+    - Ibn: reference/nokia.nsp.ibn.md
+    - Rest: reference/nokia.nsp.rest.md
+    - RPC: reference/nokia.nsp.rpc.md
+    - Upload: reference/nokia.nsp.upload.md
+    - Version: reference/nokia.nsp.version.md
+    - Wfm: reference/nokia.nsp.wfm.md
+  - Plugins:
+    - NSP: reference/nokia.nsp.nsp.md
+plugins:
+- search
+markdown_extensions:
+- attr_list
+- toc:
+    permalink: true
+- tables
+- admonition
+- pymdownx.details
+- pymdownx.superfences
+- pymdownx.highlight:
+    use_pygments: true
+- pymdownx.tabbed:
+    alternate_style: true
+- pymdownx.blocks.tab:
+    alternate_style: true
+- pymdownx.blocks.admonition
+- pymdownx.tasklist:
+    custom_checkbox: true
+extra:
+  version: 0.1.0
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/nokia/nsp-playbooks-for-Ansible

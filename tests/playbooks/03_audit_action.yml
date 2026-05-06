@@ -1,0 +1,20 @@
+---
+- name: NSP Intent Audit Operation
+  hosts: nsp
+  gather_facts: no
+
+  vars:
+    ne_id: "1034::cafe:2"
+    intent_name: "fixeddemo"
+
+  tasks:
+    - name: Execute intent audit action
+      nokia.nsp.action:
+        path: "ibn:ibn/intent={{ ne_id | urlencode }},{{ intent_name  | urlencode }}"
+        operation: audit
+        input: {}
+      register: audit_result
+
+    - name: Show Result
+      debug:
+        var: audit_result

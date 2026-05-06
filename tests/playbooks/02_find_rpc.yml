@@ -1,0 +1,23 @@
+---
+- name: Query NSP network inventory using nsp-inventory:find
+  hosts: nsp
+  gather_facts: no
+
+  tasks:
+    - name: Access device inventory using nsp-inventory:find
+      nokia.nsp.rpc:
+        operation: nsp-inventory:find
+        input:
+          xpath-filter: "/nsp-equipment:network/network-element"
+          fields: "ne-id;ne-name;ip-address"
+          include-meta: false
+      register: inventory_result
+
+    - name: List devices
+      debug:
+        var: inventory_result.output['nsp-inventory:output'].data
+
+    - name: Display summary
+      debug:
+        msg: "Found {{ inventory_result.output['nsp-inventory:output'].data | length }} devices"
+...

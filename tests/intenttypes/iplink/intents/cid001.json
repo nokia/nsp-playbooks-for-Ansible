@@ -1,0 +1,14 @@
+{
+  "iplink:iplink": {
+    "description": "Madrid / Barcelona",
+    "admin-state": "enable",
+    "endpoint-b": {
+      "port-id": "1/1/c1/1",
+      "ne-id": "1034::cafe:2"
+    },
+    "endpoint-a": {
+      "port-id": "1/1/c1/1",
+      "ne-id": "1034::cafe:1"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+# Development and CI/CD Dependencies
+# Requires: Python 3.11+
+# Install with: pip install -r requirements-dev.txt
+
+# Include base production dependencies
+-r requirements.txt
+
+# Testing and Validation
+pytest>=7.0.0
+pytest-ansible>=2.4.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+
+# Code Quality and Linting
+pylint>=2.15.0
+flake8>=5.0.0
+flake8-bugbear>=23.0.0
+black>=23.0.0
+isort>=5.12.0
+pep8-naming>=0.13.0
+
+# YAML Validation
+yamllint>=1.27.0
+
+# Security Scanning
+pip-audit>=2.4.0
+bandit>=1.7.0
+
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.0.0
+sphinx>=5.0.0
+sphinx-rtd-theme>=0.0.1
+
+# Type Checking (optional)
+mypy>=0.0.1
+types-requests>=2.28.0
+
+# Coverage Reporting
+coverage>=7.0.0
+
+# Required by Ansible modules used
+paramiko
+ncclient

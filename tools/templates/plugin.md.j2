@@ -1,0 +1,24 @@
+# {{ namespace }} httpapi plugin
+
+**{{ short_description }}**
+
+{% if description_items -%}
+## Synopsis
+
+{% for item in description_items -%}
+* {{ item | ansible }}
+{% endfor %}
+{% endif -%}
+
+{% if options -%}
+## Connection Options
+
+| Parameter | Type | Comments |
+| --- | --- | --- |
+{% for opt_name, opt_data in options.items() | sort %}{% set _anchor = "param-" ~ opt_name.replace('_', '-') %}| {{ opt_name }} {{ '{#' ~ _anchor ~ '}' }} | {{ opt_data.type or 'any' }} | {{ opt_data.comments | replace('\n', '<br/>') }} |
+{% endfor %}
+{% endif -%}
+
+{% if version_added -%}
+*New in version {{ version_added }}*
+{% endif %}

@@ -1,0 +1,56 @@
+---
+# Upload intent-type iplink, add Madrid–Barcelona link intent (with audit/sync), then delete intent and intent-type.
+# Uses fixture at tests/intenttypes/iplink. Uses ibn module for intent lifecycle (playbook 30 keeps raw RESTCONF).
+- name: NSP intent manager lifecycle operations using iplink intent-type
+  hosts: nsp
+  gather_facts: false
+
+  vars:
+    intent_type_path: "{{ playbook_dir }}/../intenttypes/iplink"
+    target: cid001
+    config:
+      "iplink:iplink":
+        description: "Madrid / Barcelona"
+        admin-state: enable
+        endpoint-a:
+          ne-id: "1034::cafe:1"
+          port-id: "1/1/c1/1"
+        endpoint-b:
+          ne-id: "1034::cafe:2"
+          port-id: "1/1/c1/1"
+
+  tasks:
+    - name: Upload intent-type
+      nokia.nsp.ibn:
+        operation: upload_intent_type
+        path: "{{ intent_type_path }}"
+      register: upload_result
+
+    - name: Add iplink intent (create or update)
+      nokia.nsp.ibn:
+        operation: add_intent
+        intent_type: "{{ upload_result.intent_type }}"
+        version: "{{ upload_result.version }}"
+        target: "{{ target }}"
+        config: "{{ config }}"
+        desired_state: active
+        perform: synchronize
+      register: add_intent_result
+
+    - name: Show add intent result
+      debug:
+        var: add_intent_result
+
+    - name: Delete intent (remove from network then controller)
+      nokia.nsp.ibn:
+        operation: delete_intent
+        target: "{{ target }}"
+        intent_type: "{{ upload_result.intent_type }}"
+        remove_from_network: true
+
+    - name: Delete intent-type
+      nokia.nsp.ibn:
+        operation: delete_intent_type
+        intent_type: "{{ upload_result.intent_type }}"
+        version: "{{ upload_result.version }}"
+        force: true
