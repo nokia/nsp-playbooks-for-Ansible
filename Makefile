@@ -190,14 +190,9 @@ validate-syntax:
 
 validate-ansible:
 	@echo "Running Ansible syntax check..."
-	@echo "Building collection for validation..."
-	@ansible-galaxy collection build --force . >/dev/null 2>&1 || true
-	@COLLECTION_FILE=$$(ls nokia-nsp-*.tar.gz 2>/dev/null | head -1); \
-	if [ -n "$$COLLECTION_FILE" ]; then \
-		echo "Installing collection temporarily..."; \
-		ansible-galaxy collection install "$$COLLECTION_FILE" --force >/dev/null 2>&1 || true; \
-	fi; \
-	if [ -f tests/inventory.yml ]; then \
+	@echo "Installing collection from source (pulls galaxy.yml dependencies)..."
+	ansible-galaxy collection install . --force
+	@if [ -f tests/inventory.yml ]; then \
 		ansible-playbook --syntax-check -i tests/inventory.yml tests/playbooks/*.yml; \
 	else \
 		echo "Using example inventory for syntax check..."; \
